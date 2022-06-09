@@ -1,0 +1,37 @@
+{
+    "name": "io6Library",
+    "keywords": "FEmbed, arduino, network, io6Library",
+    "description": "FEmbed io6Library compatible library",
+    "authors":
+    {
+        "name": "Wiznet",
+        "email": "Wiznet",
+        "url": "https://github.com/Wiznet/io6Library.git"
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/FEmbed/io6Library.git"
+    },
+    "version": "0.1.0",
+    "frameworks": ["esp8266-rtos-sdk", "fembed", "espidf"],
+    "platforms": ["custom8266", "ststm32", "espressif32"],
+    "build": {
+        "srcFilter":[
+            "+<*>",
+            "+<*.c>",
+            "+<*.cpp>",
+            "+<*.h>"
+        ],
+        "flags":
+        [
+            "-IEthernet",
+            "-IEthernet/W6100",
+            "-IInternet/DHCP4",
+            "-IInternet/DHCP6",
+            "-IInternet/DNS",
+            "-IApplication/loopback",
+            "-IApplication"
+        ]
+    }
+}
