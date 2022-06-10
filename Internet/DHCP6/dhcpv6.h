@@ -61,6 +61,9 @@
 
 #define DCHP_HOST_NAME "WIZnet\0"
 
+#if __cplusplus
+extern "C" {
+#endif
 /* 
  * @brief return value of @ref DHCP_run()
  */
@@ -132,5 +135,9 @@ uint8_t DHCP_run2(void);
  * @note If you want to restart. call DHCP_init() and DHCP_run()
  */
 void DHCP_stop(void);
+
+#if __cplusplus
+ }
+#endif
 
 #endif /* _DHCP_H_ */

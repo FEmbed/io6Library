@@ -77,6 +77,10 @@
 #include "stdint.h"
 #include "wizchip_conf.h"
 
+#if __cplusplus
+extern "C" {
+#endif
+
 #define SOCKET               uint8_t  ///< SOCKET type define for legacy driver
 
 #define SOCK_OK              1        ///< Result is OK about socket process.
@@ -559,4 +563,7 @@ int8_t getsockopt(uint8_t sn, sockopt_type sotype, void* arg);
  */
 int16_t peeksockmsg(uint8_t sn, uint8_t* submsg, uint16_t subsize);
 
+#if __cplusplus
+ }
+#endif
 #endif   // _SOCKET_H_
