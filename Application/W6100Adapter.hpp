@@ -9,6 +9,7 @@
 #ifndef IO6LIBRARY_APPLICATION_W6100ADAPTER_H_
 #define IO6LIBRARY_APPLICATION_W6100ADAPTER_H_
 
+#include <functional>
 #include "wizchip_conf.h"
 #include <FEmbed.h>
 
@@ -39,58 +40,82 @@ class W6100AdapterOp {
  * @brief W6100Adapter use singleton mode, so one system only support on W6100 SPI Eth phy.
  * 			User must implement W6100AdapterOp for spi byte and bytes operations.
  */
-class W6100Adapter /* : public FEmbed::Service<W6100Adapter> */{
+class W6100Adapter {
 public:
-	W6100Adapter(shared_ptr<W6100AdapterOp> op) {
+	W6100Adapter(W6100AdapterOp* op) {
 		m_op = op;
-		W6100SpiReadByte = [this]() -> uint8_t {
-			if(this->m_op) return this->m_op->readByte();
+        
+        static auto readByte = []() -> uint8_t {
+            if(W6100AdapterOp* op = W6100Adapter::getOp()) {
+                return op->readByte();
+            }        
 			return 0;
-		};
-		W6100SpiWriteByte = [this](uint8_t byte) {
-			if(this->m_op) this->m_op->writeByte(byte);
-		};
-		W6100SpiReadBurst = [this](uint8_t* pBuf, datasize_t len) {
-			if(this->m_op) this->m_op->readBytes(pBuf, len);
-		};
-		W6100SpiWriteBurst = [this](uint8_t* pBuf, datasize_t len) {
-			if(this->m_op) this->m_op->writeBytes(pBuf, len);
-		};
-		W6100CsEnable = [this]() {
-			if(this->m_op) this->m_op->csEnable();
-		};
-		W6100CsDisable = [this]() {
-			if(this->m_op) this->m_op->csDisable();
-		};
+        };
+        this->W6100SpiReadByte = readByte;
+
+        static auto writeByte = [](uint8_t byte) {
+            if(W6100AdapterOp* op = W6100Adapter::getOp()) {
+                op->writeByte(byte);
+            }
+        };
+        this->W6100SpiWriteByte = writeByte;
+
+        static auto writeBytes = [](uint8_t* pBuf, datasize_t len) {
+            if(W6100AdapterOp* op = W6100Adapter::getOp()) {
+                op->writeBytes(pBuf, len);
+            }
+        };
+        this->W6100SpiWriteBurst = writeBytes;
+
+        static auto readBytes = [](uint8_t* pBuf, datasize_t len) {
+            if(W6100AdapterOp* op = W6100Adapter::getOp()) {
+                op->readBytes(pBuf, len);
+            }
+        };
+        this->W6100SpiReadBurst = readBytes;
+
+        static auto csEnable = []() {
+            if(W6100AdapterOp* op = W6100Adapter::getOp()) {
+                op->csEnable();
+            }
+        };
+        this->W6100CsEnable = csEnable;
+
+        static auto csDisable = []() {
+            if(W6100AdapterOp* op = W6100Adapter::getOp()) {
+                op->csDisable();
+            }
+        };
+        this->W6100CsDisable = csDisable;
 
 		gWIZNETINFO = {
-				{0x00, 0x08, 0xdc, 0xff, 0xff, 0xff},				// mac
-				{192, 168, 100, 25},								// ip
-				{255, 255, 255, 0},
-				{192, 168, 100, 1},
-				{168, 126, 63, 1},
+				{0x00, 0x08, 0xdc, 0xff, 0xff, 0xff},				// Source Hardware Address
+				{192, 168, 100, 25},								// Source IPv4 Address
+				{255, 255, 255, 0},                                 // Subnet Mask value
+				{192, 168, 100, 1},                                 //
 				{0xfe,0x80,0x00,0x00,
 				0x00,0x00, 0x00,0x00,
 				0x02,0x08, 0xdc,0xff,
-				0xfe,0xff, 0xff,0xff},
+				0xfe,0xff, 0xff,0xff},                              // Source Link Local Address
 				{0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00},
+				0x00, 0x00, 0x00, 0x00},                            // Source Global Unicast Address
 				{0xff,0xff,0xff,0xff,
 				0xff,0xff,0xff,0xff,
 				0x00,0x00,0x00, 0x00,
-				0x00,0x00,0x00,0x00 },
+				0x00,0x00,0x00,0x00 },                              // IPv6 Prefix
 				{0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00,
-				0x00, 0x00, 0x00, 0x00}
+				0x00, 0x00, 0x00, 0x00},                             // Gateway IPv6 Address
+                {223, 5, 5, 5}
 		};   ///< Gateway IPv6 Address
 	}
 
 	virtual ~W6100Adapter()
 	{
-
+        // Nothing to do
 	}
 
 	/**
@@ -100,32 +125,14 @@ public:
 	 */
 	void init()
 	{
-//		static uint8_t (*W6100SpiReadByte)() = [this]() -> uint8_t {
-//			if(this->m_op) return this->m_op->readByte();
-//			return 0;
-//		};
-//		static void (*W6100SpiWriteByte)(uint8_t) = [this](uint8_t byte) {
-//			if(this->m_op) this->m_op->writeByte(byte);
-//		};
-//		static void (*W6100SpiReadBurst)(uint8_t* , datasize_t) = [this](uint8_t* pBuf, datasize_t len) {
-//			if(this->m_op) this->m_op->readBytes(pBuf, len);
-//		};
-//		static void (*W6100SpiWriteBurst)(uint8_t* , datasize_t) = [this](uint8_t* pBuf, datasize_t len) {
-//			if(this->m_op) this->m_op->writeBytes(pBuf, len);
-//		};
-//		static void (*W6100CsEnable)() = [this]() {
-//			if(this->m_op) this->m_op->csEnable();
-//		};
-//		static void (*W6100CsDisable)() = [this]() {
-//			if(this->m_op) this->m_op->csDisable();
-//		};
-
-		if(this->m_op)
-			this->m_op->reset();
-
+		if(m_op)
+        {
+			m_op->reset();
+        }
+        
 		reg_wizchip_spi_cbfunc(W6100SpiReadByte, W6100SpiWriteByte, W6100SpiReadBurst, W6100SpiWriteBurst);
 		reg_wizchip_cs_cbfunc(W6100CsEnable, W6100CsDisable);
-
+        
 	}
 
 	/**
@@ -180,7 +187,7 @@ public:
 
 	bool getInterruptMask(intr_kind *flag)
 	{
-		if (ctlwizchip(CW_SET_INTRMASK, flag) == -1)
+		if (ctlwizchip(CW_GET_INTRMASK, flag) == -1)
 		{
 			log_w("W6100 get interrupt mask fail.");
 			return false;
@@ -228,10 +235,11 @@ public:
 
 	wiz_NetInfo gWIZNETINFO;			/// Current w6100 information.
 private:
-	shared_ptr<W6100AdapterOp> m_op;
+	static W6100AdapterOp* m_op;
+    static W6100AdapterOp* getOp() { return m_op; }
 
 	/// Callback for C run library.
-	uint8_t (*W6100SpiReadByte)();
+    uint8_t (*W6100SpiReadByte)();
 	void (*W6100SpiWriteByte)(uint8_t);
 	void (*W6100SpiReadBurst)(uint8_t* , datasize_t);
 	void (*W6100SpiWriteBurst)(uint8_t* , datasize_t);
@@ -239,6 +247,7 @@ private:
 	void (*W6100CsDisable)();
 };
 
+ inline W6100AdapterOp* W6100Adapter::m_op = nullptr;
 } /* namespace WizNet */
 
 #endif /* IO6LIBRARY_APPLICATION_W6100ADAPTER_HPP_ */

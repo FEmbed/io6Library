@@ -34,7 +34,7 @@ public:
 		m_socket_fd = -1;
 	}
 
-	int connectV4(u32_t ip, uint16_t port, int32_t timeout = 5000) override
+	int connectV4(u32_t ip, uint16_t port, int32_t timeout = 5000)
 	{
 		uint8_t status;
 		FE_TICKS_TYPE start = fe_get_ticks();
@@ -61,7 +61,7 @@ public:
 								switch(status)
 								{
 								case SOCK_INIT:
-									ret = connect((uint8_t)i, (uint8_t *)&ip, port, (uint8_t)4);
+									ret = ::connect((uint8_t)i, (uint8_t *)&ip, port, (uint8_t)4);
 									break;
 								case SOCK_ESTABLISHED:
 									log_d("socket:%d connected.", i);

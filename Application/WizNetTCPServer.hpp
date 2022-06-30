@@ -173,7 +173,7 @@ private:
 				if(status == SOCK_CLOSED)
 				{
 					m_socket_fd[index] = i;
-					if((ret = socket(m_socket_fd[index], Sn_MR_TCPD, port, 0x0)) != m_socket_fd)
+					if((ret = socket(m_socket_fd[index], Sn_MR_TCPD, port, 0x0)) != m_socket_fd[index])
 					{
 						log_w("socket:%d init error:%d", m_socket_fd[index], ret);
 						close(m_socket_fd[index]);
@@ -183,7 +183,7 @@ private:
 					{
 						// Wait timeout until listen
 						do {
-							bool listen = false;
+							bool setup = false;
 							if((getsockopt(i, SO_STATUS, &status) == SOCK_OK))
 							{
 								switch(status)
@@ -194,7 +194,7 @@ private:
 								case SOCK_LISTEN:
 								case SOCK_ESTABLISHED:
 									log_d("socket:%d listening.", i);
-									listen = true;
+									setup = true;
 									break;
 								case SOCK_CLOSED:
 									m_socket_fd[index] = -1;
@@ -202,7 +202,7 @@ private:
 								default:;
 								}
 							}
-							if(listen) break;
+							if(setup) break;
 						} while(fe_ticks_istimeout(start, timeout) == FALSE);
 					}
 				}

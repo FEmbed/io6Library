@@ -602,7 +602,9 @@ int8_t parseDHCPv4MSG(void)
       printf("DHCP message : %d.%d.%d.%d(%d) %d received. \r\n",svr_addr[0],svr_addr[1],svr_addr[2], svr_addr[3],svr_port, len);
    #endif
    }
-   else return 0;
+   else {
+    return 0;
+   }
 	if (svr_port == DHCPV4_SERVER_PORT) {
       // compare mac address
 		if ( (pDHCPv4MSG->chaddr[0] != DHCPv4_CHADDR[0]) || (pDHCPv4MSG->chaddr[1] != DHCPv4_CHADDR[1]) ||

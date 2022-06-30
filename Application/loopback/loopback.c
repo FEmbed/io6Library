@@ -10,9 +10,9 @@
 static uint16_t any_port = 	50000;
 static uint8_t curr_state[8] = {0,};
 static uint8_t sock_state[8] = {0,};
-uint8_t* msg_v4 = "IPv4 mode";
-uint8_t* msg_v6 = "IPv6 mode";
-uint8_t* msg_dual = "Dual IP mode";
+const char* msg_v4 = "IPv4 mode";
+const char* msg_v6 = "IPv6 mode";
+const char* msg_dual = "Dual IP mode";
 
 int32_t loopback_tcps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_mode)
 {
@@ -26,13 +26,13 @@ int32_t loopback_tcps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_
 
     if(loopback_mode == AS_IPV4)
     {
-       mode_msg = msg_v4;
+       mode_msg = (uint8_t *)msg_v4;
     }else if(loopback_mode == AS_IPV6)
     {
-       mode_msg = msg_v6;
+       mode_msg = (uint8_t *)msg_v6;
     }else
     {
-       mode_msg = msg_dual;
+       mode_msg = (uint8_t *)msg_dual;
     }
     #ifdef _LOOPBACK_DEBUG_
         uint8_t dst_ip[16], ext_status;
@@ -281,7 +281,7 @@ int32_t loopback_tcpc(uint8_t sn, uint8_t* buf, uint8_t* destip, uint16_t destpo
         else if(loopback_mode == AS_IPV6)
           ret = connect(sn, destip, destport, 16); /* Try to connect to TCP server(Socket, DestIP, DestPort) */
 
-        printf("SOCK Status: %d\r\n", ret);
+        printf("SOCK Status: %ld\r\n", ret);
 
         if( ret != SOCK_OK) return ret;	//	Try to TCP connect to the TCP server (destination)
         break;
@@ -332,13 +332,13 @@ int32_t loopback_udps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_
 
     if(loopback_mode == AS_IPV4)
     {
-            mode_msg = msg_v4;
+            mode_msg = (uint8_t*)msg_v4;
     }else if(loopback_mode == AS_IPV6)
     {
-            mode_msg = msg_v6;
+            mode_msg = (uint8_t*)msg_v6;
     }else
     {
-            mode_msg = msg_dual;
+            mode_msg = (uint8_t*)msg_dual;
     }
 
     getsockopt(sn, SO_STATUS,&status);

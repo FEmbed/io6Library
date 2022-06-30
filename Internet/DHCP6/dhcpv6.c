@@ -1246,7 +1246,7 @@ void DHCP_init(uint8_t s, uint8_t *buf)
 
     DHCP_SOCKET = s; // SOCK_DHCP
 
-    memset(buf, 0, sizeof(buf));
+    *buf = 0;        // Just to clear the buffer
     pDHCPMSG.OPT = buf;
     DHCP_XID = 0x515789;
 
