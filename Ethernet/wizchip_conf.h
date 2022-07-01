@@ -209,6 +209,8 @@ typedef struct __WIZCHIP_T__
          void      (*_write_byte)     (uint8_t wb);                     ///< Write 1 byte data to @ref _WIZCHIP_ through SPI
          void      (*_read_byte_buf)  (uint8_t* pBuf, datasize_t len);  ///< Read byte data as many as <i>len</i> from @ref _WIZCHIP_ through SPI
          void      (*_write_byte_buf) (uint8_t* pBuf, datasize_t len);  ///< Write byte data as many as <i>len</i> to @ref _WIZCHIP_ through SPI
+
+         void      (*_vdm_xfer) (uint8_t* addr, datasize_t alen, uint8_t* data, datasize_t dlen); ///< Write with read and auto cs function.
       }SPI;
    }IF;    
 
@@ -630,7 +632,8 @@ void reg_wizchip_bus_cbfunc(iodata_t (*bus_rd)(uint32_t addr),
 void reg_wizchip_spi_cbfunc(uint8_t (*spi_rb)(void), 
                             void (*spi_wb)(uint8_t wb),
                             void (*spi_rbuf)(uint8_t* buf, datasize_t len),
-                            void (*spi_wbuf)(uint8_t* buf, datasize_t len) );
+                            void (*spi_wbuf)(uint8_t* buf, datasize_t len),
+							void (*vdm_xfer) (uint8_t* addr, datasize_t alen, uint8_t* data, datasize_t dlen));
 /// @cond DOXY_APPLY_CODE
 #endif
 /// @endcond

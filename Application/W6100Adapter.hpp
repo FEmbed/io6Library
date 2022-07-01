@@ -33,6 +33,7 @@ class W6100AdapterOp {
     virtual void    writeByte(uint8_t byte) { }
     virtual void    writeBytes(uint8_t* pBuf, datasize_t len) { }
     virtual void    readBytes(uint8_t* pBuf, datasize_t len) { }
+    virtual void    vdmXfer(uint8_t* addr, datasize_t alen, uint8_t* data, datasize_t dlen) { }
 };
 
 /**
@@ -73,6 +74,13 @@ public:
             }
         };
         this->W6100SpiReadBurst = readBytes;
+
+        static auto vdmWriteRead = [](uint8_t* addr, datasize_t alen, uint8_t* data, datasize_t dlen) {
+            if(W6100AdapterOp* op = W6100Adapter::getOp()) {
+                op->vdmXfer(addr, alen, data, dlen);
+            }
+        };
+        this->W6100SpiVDMXfer = vdmWriteRead;
 
         static auto csEnable = []() {
             if(W6100AdapterOp* op = W6100Adapter::getOp()) {
@@ -130,7 +138,10 @@ public:
 			m_op->reset();
         }
         
-		reg_wizchip_spi_cbfunc(W6100SpiReadByte, W6100SpiWriteByte, W6100SpiReadBurst, W6100SpiWriteBurst);
+		reg_wizchip_spi_cbfunc(
+				W6100SpiReadByte, W6100SpiWriteByte,
+				W6100SpiReadBurst, W6100SpiWriteBurst,
+				W6100SpiVDMXfer);
 		reg_wizchip_cs_cbfunc(W6100CsEnable, W6100CsDisable);
         
 	}
@@ -243,6 +254,8 @@ private:
 	void (*W6100SpiWriteByte)(uint8_t);
 	void (*W6100SpiReadBurst)(uint8_t* , datasize_t);
 	void (*W6100SpiWriteBurst)(uint8_t* , datasize_t);
+	void (*W6100SpiVDMXfer)(uint8_t* addr, datasize_t alen, uint8_t* data, datasize_t dlen);
+
 	void (*W6100CsEnable)();
 	void (*W6100CsDisable)();
 };
