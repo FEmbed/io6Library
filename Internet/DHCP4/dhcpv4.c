@@ -420,7 +420,7 @@ void send_DHCPv4_DISCOVER(void)
 	printf("> Send DHCP_DISCOVER\r\n");
 #endif
 
-	sendto(DHCPV4_SOCKET, (uint8_t *)pDHCPv4MSG, RIP_MSG_SIZE, ip, DHCPV4_SERVER_PORT, 4);
+	wiz_sendto(DHCPV4_SOCKET, (uint8_t *)pDHCPv4MSG, RIP_MSG_SIZE, ip, DHCPV4_SERVER_PORT, 4);
 }
 
 /* SEND DHCP REQUEST */
@@ -518,7 +518,7 @@ void send_DHCPv4_REQUEST(void)
 	printf("> Send DHCP_REQUEST\r\n");
 #endif
 
-	sendto(DHCPV4_SOCKET, (uint8_t *)pDHCPv4MSG, RIP_MSG_SIZE, ip, DHCPV4_SERVER_PORT, 4);
+	wiz_sendto(DHCPV4_SOCKET, (uint8_t *)pDHCPv4MSG, RIP_MSG_SIZE, ip, DHCPV4_SERVER_PORT, 4);
 
 }
 
@@ -579,7 +579,7 @@ void send_DHCPv4_DECLINE(void)
 	printf("\r\n> Send DHCPV4_DECLINE\r\n");
 #endif
 
-	sendto(DHCPV4_SOCKET, (uint8_t *)pDHCPv4MSG, RIP_MSG_SIZE, ip, DHCPV4_SERVER_PORT, 4);
+	wiz_sendto(DHCPV4_SOCKET, (uint8_t *)pDHCPv4MSG, RIP_MSG_SIZE, ip, DHCPV4_SERVER_PORT, 4);
 }
 
 /* PARSE REPLY pDHCPv4MSG */
@@ -597,7 +597,7 @@ int8_t parseDHCPv4MSG(void)
 
    if((len = getSn_RX_RSR(DHCPV4_SOCKET)) > 0)
    {
-   	len = recvfrom(DHCPV4_SOCKET, (uint8_t *)pDHCPv4MSG, len, svr_addr, &svr_port, &addr_len);
+   	len = wiz_recvfrom(DHCPV4_SOCKET, (uint8_t *)pDHCPv4MSG, len, svr_addr, &svr_port, &addr_len);
    #ifdef _DHCPV4_DEBUG_
       printf("DHCP message : %d.%d.%d.%d(%d) %d received. \r\n",svr_addr[0],svr_addr[1],svr_addr[2], svr_addr[3],svr_port, len);
    #endif
@@ -714,7 +714,7 @@ uint8_t DHCPv4_run(void)
 	if(dhcpv4_state == STATE_DHCPV4_STOP) return DHCPV4_STOPPED;
 
 	if(getSn_SR(DHCPV4_SOCKET) != SOCK_UDP)
-	   socket(DHCPV4_SOCKET, Sn_MR_UDP, DHCPV4_CLIENT_PORT, 0x00);
+	   wiz_socket(DHCPV4_SOCKET, Sn_MR_UDP, DHCPV4_CLIENT_PORT, 0x00);
 
 	ret = DHCPV4_RUNNING;
 	type = parseDHCPv4MSG();
@@ -839,7 +839,7 @@ uint8_t DHCPv4_run(void)
 
 void    DHCPv4_stop(void)
 {
-   close(DHCPV4_SOCKET);
+   wiz_close(DHCPV4_SOCKET);
    dhcpv4_state = STATE_DHCPV4_STOP;
 }
 
@@ -907,7 +907,7 @@ int8_t check_DHCPv4_leasedIP(void)
 
 	// IP conflict detection : ARP request - ARP reply
 	// Broadcasting ARP Request for check the IP conflict using UDP sendto() function
-	ret = sendto(DHCPV4_SOCKET, (uint8_t *)"CHECK_IP_CONFLICT", 17, DHCPv4_allocated_ip, 5000, 4);
+	ret = wiz_sendto(DHCPV4_SOCKET, (uint8_t *)"CHECK_IP_CONFLICT", 17, DHCPv4_allocated_ip, 5000, 4);
 
 	// RCR value restore
 	setRCR(tmp);

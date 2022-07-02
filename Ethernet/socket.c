@@ -98,7 +98,7 @@ static uint8_t  sock_pack_info[_WIZCHIP_SOCK_NUM_] = {0,};
 
 
 
-int8_t socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
+int8_t wiz_socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
 { 
    uint8_t taddr[16];
    uint16_t local_port=0;
@@ -158,7 +158,7 @@ int8_t socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
             break;
       }
    }
-   close(sn);
+   wiz_close(sn);
    setSn_MR(sn,(protocol | (flag & 0xF0)));
    setSn_MR2(sn, flag & 0x03);  
    if(!port)
@@ -183,7 +183,7 @@ int8_t socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
 }  
 
 
-int8_t close(uint8_t sn)
+int8_t wiz_close(uint8_t sn)
 {
    CHECK_SOCKNUM();
    setSn_CR(sn,Sn_CR_CLOSE);
@@ -201,7 +201,7 @@ int8_t close(uint8_t sn)
 }
 
 
-int8_t listen(uint8_t sn)
+int8_t wiz_listen(uint8_t sn)
 {
    CHECK_SOCKNUM();
    CHECK_SOCKINIT();
@@ -209,14 +209,14 @@ int8_t listen(uint8_t sn)
    while(getSn_CR(sn));
    while(getSn_SR(sn) != SOCK_LISTEN)
    {
-      close(sn);
+      wiz_close(sn);
       return SOCKERR_SOCKCLOSED;
    }
    return SOCK_OK;
 }
 
 
-int8_t connect(uint8_t sn, uint8_t * addr, uint16_t port, uint8_t addrlen)
+int8_t wiz_connect(uint8_t sn, uint8_t * addr, uint16_t port, uint8_t addrlen)
 { 
 
    CHECK_SOCKNUM();
@@ -263,7 +263,7 @@ int8_t connect(uint8_t sn, uint8_t * addr, uint16_t port, uint8_t addrlen)
    return SOCK_OK;
 }
 
-int8_t disconnect(uint8_t sn)
+int8_t wiz_disconnect(uint8_t sn)
 {
    CHECK_SOCKNUM();
    CHECK_TCPMODE();
@@ -277,7 +277,7 @@ int8_t disconnect(uint8_t sn)
       {
          if(getSn_IR(sn) & Sn_IR_TIMEOUT)
          {
-            close(sn);
+            wiz_close(sn);
             return SOCKERR_TIMEOUT;
          }
       }
@@ -286,7 +286,7 @@ int8_t disconnect(uint8_t sn)
 }
 
 
-datasize_t send(uint8_t sn, uint8_t * buf, datasize_t len)
+datasize_t wiz_send(uint8_t sn, uint8_t * buf, datasize_t len)
 {
    uint8_t tmp=0;
    datasize_t freesize=0;
@@ -305,7 +305,7 @@ datasize_t send(uint8_t sn, uint8_t * buf, datasize_t len)
       tmp = getSn_SR(sn);
       if ((tmp != SOCK_ESTABLISHED) && (tmp != SOCK_CLOSE_WAIT))
       {
-         if(tmp == SOCK_CLOSED) close(sn);
+         if(tmp == SOCK_CLOSED) wiz_close(sn);
          return SOCKERR_SOCKSTATUS;
       }
       if(len <= freesize) break;
@@ -319,7 +319,7 @@ datasize_t send(uint8_t sn, uint8_t * buf, datasize_t len)
          tmp = getSn_SR(sn);
          if ((tmp != SOCK_ESTABLISHED) && (tmp != SOCK_CLOSE_WAIT) )
          {
-            if( (tmp == SOCK_CLOSED) || (getSn_IR(sn) & Sn_IR_TIMEOUT) ) close(sn);
+            if( (tmp == SOCK_CLOSED) || (getSn_IR(sn) & Sn_IR_TIMEOUT) ) wiz_close(sn);
             return SOCKERR_SOCKSTATUS;
          }
          if(sock_io_mode & (1<<sn)) return SOCK_BUSY;
@@ -335,7 +335,7 @@ datasize_t send(uint8_t sn, uint8_t * buf, datasize_t len)
 }
 
 
-datasize_t recv(uint8_t sn, uint8_t * buf, datasize_t len)
+datasize_t wiz_recv(uint8_t sn, uint8_t * buf, datasize_t len)
 {
    uint8_t  tmp = 0;
    datasize_t recvsize = 0;
@@ -355,7 +355,7 @@ datasize_t recv(uint8_t sn, uint8_t * buf, datasize_t len)
       tmp = getSn_SR(sn);
       if (tmp != SOCK_ESTABLISHED && tmp != SOCK_CLOSE_WAIT)
       {
-         if(tmp == SOCK_CLOSED) close(sn);
+         if(tmp == SOCK_CLOSED) wiz_close(sn);
          return SOCKERR_SOCKSTATUS;
       }
       if(recvsize) break;
@@ -369,7 +369,7 @@ datasize_t recv(uint8_t sn, uint8_t * buf, datasize_t len)
 }
 
 
-datasize_t sendto(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uint16_t port, uint8_t addrlen)
+datasize_t wiz_sendto(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uint16_t port, uint8_t addrlen)
 {
    uint8_t tmp = 0;
    uint8_t tcmd = Sn_CR_SEND;
@@ -438,7 +438,7 @@ datasize_t sendto(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uin
 }
 
 
-datasize_t recvfrom(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uint16_t *port, uint8_t *addrlen)
+datasize_t wiz_recvfrom(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uint16_t *port, uint8_t *addrlen)
 { 
    uint8_t  head[2];
    datasize_t pack_len=0;
@@ -490,7 +490,7 @@ datasize_t recvfrom(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, u
 			pack_len-=2;
             if(pack_len > 1514) 
             {
-               close(sn);
+               wiz_close(sn);
                return SOCKFATAL_PACKLEN;
             }
             break; 

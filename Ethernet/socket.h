@@ -221,7 +221,7 @@ extern "C" {
  *                     @ref SOCKERR_SOCKFLAG    - Invaild SOCKETn flag.
  * @sa _Sn_MR_, _Sn_MR2_ 
  */
-int8_t socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag);
+int8_t wiz_socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag);
 
 /**
  * @ingroup WIZnet_socket_APIs
@@ -231,7 +231,7 @@ int8_t socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag);
  * @return Success : @ref SOCK_OK \n
  *         Fail    : @ref SOCKERR_SOCKNUM - Invalid SOCKET number
  */
-int8_t close(uint8_t sn);
+int8_t wiz_close(uint8_t sn);
 
 /**
  * @ingroup WIZnet_socket_APIs
@@ -244,7 +244,7 @@ int8_t close(uint8_t sn);
  *         Fail    :\n @ref SOCKERR_SOCKINIT   - Socket is not initialized \n
  *                     @ref SOCKERR_SOCKCLOSED - Socket closed unexpectedly.
  */
-int8_t listen(uint8_t sn);
+int8_t wiz_listen(uint8_t sn);
 
 /**
  * @ingroup WIZnet_socket_APIs
@@ -268,7 +268,7 @@ int8_t listen(uint8_t sn);
  *       In block io mode, it does not return until connection is completed. \n
  *       In Non-block io mode(@ref SF_IO_NONBLOCK), it returns @ref SOCK_BUSY immediately.
  */
-int8_t connect(uint8_t sn, uint8_t * addr, uint16_t port, uint8_t addrlen);
+int8_t wiz_connect(uint8_t sn, uint8_t * addr, uint16_t port, uint8_t addrlen);
 
 
 /**
@@ -285,7 +285,7 @@ int8_t connect(uint8_t sn, uint8_t * addr, uint16_t port, uint8_t addrlen);
  *       In block io mode, it does not return until disconnection is completed. \n
  *       In Non-block io mode(@ref SF_IO_NONBLOCK), it returns @ref SOCK_BUSY immediately. \n
  */
-int8_t disconnect(uint8_t sn);
+int8_t wiz_disconnect(uint8_t sn);
 
 /**
  * @ingroup WIZnet_socket_APIs
@@ -305,7 +305,7 @@ int8_t disconnect(uint8_t sn);
  *       In block io mode, It doesn't return until data sending is completed when SOCKET transmittable buffer size is greater than data. \n
  *       In non-block io mode(@ref SF_IO_NONBLOCK), It return @ref SOCK_BUSY immediately when SOCKET transmittable buffer size is not enough or the previous sent data is not completed. \n
  */
-datasize_t send(uint8_t sn, uint8_t * buf, datasize_t len);
+datasize_t wiz_send(uint8_t sn, uint8_t * buf, datasize_t len);
 
 
 /**
@@ -327,7 +327,7 @@ datasize_t send(uint8_t sn, uint8_t * buf, datasize_t len);
  *       In non-block io mode(@ref SF_IO_NONBLOCK), it return @ref SOCK_BUSY immediately when SOCKET RX buffer is empty. \n
  *
  */
-datasize_t recv(uint8_t sn, uint8_t * buf, datasize_t len);
+datasize_t wiz_recv(uint8_t sn, uint8_t * buf, datasize_t len);
 
 
 /**
@@ -357,7 +357,7 @@ datasize_t recv(uint8_t sn, uint8_t * buf, datasize_t len);
  *       In block io mode, It doesn't return until data send is completed. 
  *       In non-block io mode(@ref SF_IO_NONBLOCK), It return @ref SOCK_BUSY immediately when SOCKET transimttable buffer size is not enough.
  */
-datasize_t sendto(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uint16_t port, uint8_t addrlen);
+datasize_t wiz_sendto(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uint16_t port, uint8_t addrlen);
 
 /**
  * @ingroup WIZnet_socket_APIs
@@ -391,7 +391,7 @@ datasize_t sendto(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uin
  *       In block io mode, it doesn't return until data reception is completed. that is, it waits until any datagram packet is received in SOCKET RX buffer. \n
  *       In non-block io mode(@ref SF_IO_NONBLOCK), it return @ref SOCK_BUSY immediately when SOCKET RX buffer is empty. \n
  */
-datasize_t recvfrom(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uint16_t *port, uint8_t *addrlen);
+datasize_t wiz_recvfrom(uint8_t sn, uint8_t * buf, datasize_t len, uint8_t * addr, uint16_t *port, uint8_t *addrlen);
 
 
 

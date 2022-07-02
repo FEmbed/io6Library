@@ -30,7 +30,7 @@ public:
 	{
 		// Disconnect socket
 		if(m_socket_fd != -1)
-			close(m_socket_fd);
+			wiz_close(m_socket_fd);
 		m_socket_fd = -1;
 	}
 
@@ -46,10 +46,10 @@ public:
 				if(status == SOCK_CLOSED)
 				{
 					m_socket_fd = i;
-					if((ret = socket(m_socket_fd, Sn_MR_TCPD, port, 0x0)) != m_socket_fd)
+					if((ret = wiz_socket(m_socket_fd, Sn_MR_TCPD, port, 0x0)) != m_socket_fd)
 					{
 						log_w("socket:%d init error:%d", m_socket_fd, ret);
-						close(m_socket_fd);
+						wiz_close(m_socket_fd);
 						m_socket_fd = -1;
 					}
 					else
@@ -61,7 +61,7 @@ public:
 								switch(status)
 								{
 								case SOCK_INIT:
-									ret = ::connect((uint8_t)i, (uint8_t *)&ip, port, (uint8_t)4);
+									ret = ::wiz_connect((uint8_t)i, (uint8_t *)&ip, port, (uint8_t)4);
 									break;
 								case SOCK_ESTABLISHED:
 									log_d("socket:%d connected.", i);
@@ -92,7 +92,7 @@ public:
 		else
 		{
 			log_w("Current wrap can not support ipv6");
-			close(m_socket_fd);
+			wiz_close(m_socket_fd);
 			m_socket_fd = -1;
 		}
 		return m_socket_fd;
@@ -120,7 +120,7 @@ public:
 	{
 		if(m_socket_fd != -1)
 		{
-			send(m_socket_fd, &byte, 1);
+			wiz_send(m_socket_fd, &byte, 1);
 		}
 		return 0;
 	}
@@ -130,7 +130,7 @@ public:
 		uint16_t ret = 0;
 		if(m_socket_fd != -1)
 		{
-			ret = send((uint8_t)m_socket_fd, (uint8_t *)buf, (uint16_t)size);
+			ret = wiz_send((uint8_t)m_socket_fd, (uint8_t *)buf, (uint16_t)size);
 		}
 		return ret;
 	}
@@ -149,7 +149,7 @@ public:
 		uint8_t byte;
 		if(m_socket_fd != -1)
 		{
-			recv(m_socket_fd, &byte, 1);
+			wiz_recv(m_socket_fd, &byte, 1);
 		}
 		return byte;
 	}
@@ -158,7 +158,7 @@ public:
 	{
 		if(m_socket_fd != -1)
 		{
-			return recv((uint8_t)m_socket_fd, buf, size);
+			return wiz_recv((uint8_t)m_socket_fd, buf, size);
 		}
 		return 0;
 	}
@@ -177,7 +177,7 @@ public:
 	{
 		if(m_socket_fd != -1)
 		{
-			close(m_socket_fd);
+			wiz_close(m_socket_fd);
 		}
 		m_socket_fd = -1;
 	}

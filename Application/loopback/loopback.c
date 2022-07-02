@@ -75,7 +75,7 @@ int32_t loopback_tcps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_
 
             if(received_size > 0){
                 if(received_size > DATA_BUF_SIZE) received_size = DATA_BUF_SIZE;
-                ret = recv(sn, buf, received_size);
+                ret = wiz_recv(sn, buf, received_size);
 
                 if(ret <= 0) return ret;      // check SOCKERR_BUSY & SOCKERR_XXX. For showing the occurrence of SOCKERR_BUSY.
                 received_size = (uint16_t) ret;
@@ -83,10 +83,10 @@ int32_t loopback_tcps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_
 
                 while(received_size != sentsize)
                 {
-                    ret = send(sn, buf+sentsize, received_size-sentsize);
+                    ret = wiz_send(sn, buf+sentsize, received_size-sentsize);
                     if(ret < 0)
                     {
-                        close(sn);
+                        wiz_close(sn);
                         return ret;
                     }
                     sentsize += ret; // Don't care SOCKERR_BUSY, because it is zero.
@@ -101,7 +101,7 @@ int32_t loopback_tcps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_
             if(received_size > 0) // Don't need to check SOCKERR_BUSY because it doesn't not occur.
             {
                 if(received_size > DATA_BUF_SIZE) received_size = DATA_BUF_SIZE;
-                ret = recv(sn, buf, received_size);
+                ret = wiz_recv(sn, buf, received_size);
 
                 if(ret <= 0) return ret;      // check SOCKERR_BUSY & SOCKERR_XXX. For showing the occurrence of SOCKERR_BUSY.
                 received_size = (uint16_t) ret;
@@ -109,23 +109,23 @@ int32_t loopback_tcps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_
 
                 while(received_size != sentsize)
                 {
-                    ret = send(sn, buf+sentsize, received_size-sentsize);
+                    ret = wiz_send(sn, buf+sentsize, received_size-sentsize);
                     if(ret < 0)
                     {
-                        close(sn);
+                        wiz_close(sn);
                         return ret;
                     }
                     sentsize += ret; // Don't care SOCKERR_BUSY, because it is zero.
                 }
             }
 
-            if((ret = disconnect(sn)) != SOCK_OK) return ret;
+            if((ret = wiz_disconnect(sn)) != SOCK_OK) return ret;
                 #ifdef _LOOPBACK_DEBUG_
                     printf("%d:Socket Closed\r\n", sn);
                 #endif
             break;
         case SOCK_INIT :
-            if( (ret = listen(sn)) != SOCK_OK) return ret;
+            if( (ret = wiz_listen(sn)) != SOCK_OK) return ret;
                 #ifdef _LOOPBACK_DEBUG_
                     printf("%d:Listen, TCP server loopback, port [%d] as %s\r\n", sn, port, mode_msg);
                 #endif
@@ -138,13 +138,13 @@ int32_t loopback_tcps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_
                 switch(loopback_mode)
                 {
                 case AS_IPV4:
-                    tmp = socket(sn, Sn_MR_TCP4, port, SOCK_IO_NONBLOCK);
+                    tmp = wiz_socket(sn, Sn_MR_TCP4, port, SOCK_IO_NONBLOCK);
                     break;
                 case AS_IPV6:
-                    tmp = socket(sn, Sn_MR_TCP6, port, SOCK_IO_NONBLOCK);
+                    tmp = wiz_socket(sn, Sn_MR_TCP6, port, SOCK_IO_NONBLOCK);
                     break;
                 case AS_IPDUAL:
-                    tmp = socket(sn, Sn_MR_TCPD, port, SOCK_IO_NONBLOCK);
+                    tmp = wiz_socket(sn, Sn_MR_TCPD, port, SOCK_IO_NONBLOCK);
                     break;
                 default:
                     break;
@@ -204,7 +204,7 @@ int32_t loopback_tcpc(uint8_t sn, uint8_t* buf, uint8_t* destip, uint16_t destpo
         if(received_size > 0) // Sn_RX_RSR: Socket n Received Size Register, Receiving data length
         {
             if(received_size > DATA_BUF_SIZE) received_size = DATA_BUF_SIZE; // DATA_BUF_SIZE means user defined buffer size (array)
-            ret = recv(sn, buf, received_size); // Data Receive process (H/W Rx socket buffer -> User's buffer)
+            ret = wiz_recv(sn, buf, received_size); // Data Receive process (H/W Rx socket buffer -> User's buffer)
 
             if(ret <= 0) return ret; // If the received data length <= 0, receive failed and process end
             received_size = (uint16_t) ret;
@@ -213,10 +213,10 @@ int32_t loopback_tcpc(uint8_t sn, uint8_t* buf, uint8_t* destip, uint16_t destpo
             // Data sentsize control
             while(received_size != sentsize)
             {
-                ret = send(sn, buf+sentsize, received_size-sentsize); // Data send process (User's buffer -> Destination through H/W Tx socket buffer)
+                ret = wiz_send(sn, buf+sentsize, received_size-sentsize); // Data send process (User's buffer -> Destination through H/W Tx socket buffer)
                 if(ret < 0) // Send Error occurred (sent data length < 0)
                 {
-                    close(sn); // socket close
+                    wiz_close(sn); // socket close
                     return ret;
                 }
                 sentsize += ret; // Don't care SOCKERR_BUSY, because it is zero.
@@ -234,7 +234,7 @@ int32_t loopback_tcpc(uint8_t sn, uint8_t* buf, uint8_t* destip, uint16_t destpo
         if((received_size = getSn_RX_RSR(sn)) > 0) // Sn_RX_RSR: Socket n Received Size Register, Receiving data length
         {
             if(received_size > DATA_BUF_SIZE) received_size = DATA_BUF_SIZE; // DATA_BUF_SIZE means user defined buffer size (array)
-            ret = recv(sn, buf, received_size); // Data Receive process (H/W Rx socket buffer -> User's buffer)
+            ret = wiz_recv(sn, buf, received_size); // Data Receive process (H/W Rx socket buffer -> User's buffer)
 
             if(ret <= 0) return ret; // If the received data length <= 0, receive failed and process end
             received_size = (uint16_t) ret;
@@ -243,16 +243,16 @@ int32_t loopback_tcpc(uint8_t sn, uint8_t* buf, uint8_t* destip, uint16_t destpo
             // Data sentsize control
             while(received_size != sentsize)
             {
-                ret = send(sn, buf+sentsize, received_size-sentsize); // Data send process (User's buffer -> Destination through H/W Tx socket buffer)
+                ret = wiz_send(sn, buf+sentsize, received_size-sentsize); // Data send process (User's buffer -> Destination through H/W Tx socket buffer)
                 if(ret < 0) // Send Error occurred (sent data length < 0)
                 {
-                    close(sn); // socket close
+                    wiz_close(sn); // socket close
                     return ret;
                 }
                 sentsize += ret; // Don't care SOCKERR_BUSY, because it is zero.
             }
         }
-        if((ret=disconnect(sn)) != SOCK_OK) return ret;
+        if((ret=wiz_disconnect(sn)) != SOCK_OK) return ret;
             #ifdef _LOOPBACK_DEBUG_
                 printf("%d:Socket Closed\r\n", sn);
             #endif
@@ -277,9 +277,9 @@ int32_t loopback_tcpc(uint8_t sn, uint8_t* buf, uint8_t* destip, uint16_t destpo
         #endif
 
         if(loopback_mode == AS_IPV4)
-          ret = connect(sn, destip, destport, 4); /* Try to connect to TCP server(Socket, DestIP, DestPort) */
+          ret = wiz_connect(sn, destip, destport, 4); /* Try to connect to TCP server(Socket, DestIP, DestPort) */
         else if(loopback_mode == AS_IPV6)
-          ret = connect(sn, destip, destport, 16); /* Try to connect to TCP server(Socket, DestIP, DestPort) */
+          ret = wiz_connect(sn, destip, destport, 16); /* Try to connect to TCP server(Socket, DestIP, DestPort) */
 
         printf("SOCK Status: %ld\r\n", ret);
 
@@ -290,13 +290,13 @@ int32_t loopback_tcpc(uint8_t sn, uint8_t* buf, uint8_t* destip, uint16_t destpo
         switch(loopback_mode)
         {
         case AS_IPV4:
-            tmp = socket(sn, Sn_MR_TCP4, any_port++, SOCK_IO_NONBLOCK);
+            tmp = wiz_socket(sn, Sn_MR_TCP4, any_port++, SOCK_IO_NONBLOCK);
             break;
         case AS_IPV6:
-            tmp = socket(sn, Sn_MR_TCP6, any_port++, SOCK_IO_NONBLOCK);
+            tmp = wiz_socket(sn, Sn_MR_TCP6, any_port++, SOCK_IO_NONBLOCK);
             break;
         case AS_IPDUAL:
-            tmp = socket(sn, Sn_MR_TCPD, any_port++, SOCK_IO_NONBLOCK);
+            tmp = wiz_socket(sn, Sn_MR_TCPD, any_port++, SOCK_IO_NONBLOCK);
             break;
         default:
             break;
@@ -349,14 +349,14 @@ int32_t loopback_udps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_
         if(received_size > DATA_BUF_SIZE) received_size = DATA_BUF_SIZE;
         if(received_size>0)
         {
-            ret = recvfrom(sn, buf, received_size, (uint8_t*)&destip, (uint16_t*)&destport, &addr_len);
+            ret = wiz_recvfrom(sn, buf, received_size, (uint8_t*)&destip, (uint16_t*)&destport, &addr_len);
 
             if(ret <= 0)
              return ret;
             received_size = (uint16_t) ret;
             sentsize = 0;
             while(sentsize != received_size){
-                ret = sendto(sn, buf+sentsize, received_size-sentsize, destip, destport, addr_len);
+                ret = wiz_sendto(sn, buf+sentsize, received_size-sentsize, destip, destport, addr_len);
 
                 if(ret < 0) return ret;
 
@@ -369,13 +369,13 @@ int32_t loopback_udps(uint8_t sn, uint8_t* buf, uint16_t port, uint8_t loopback_
         switch(loopback_mode)
         {
         case AS_IPV4:
-           socket(sn,Sn_MR_UDP4, port, SOCK_IO_NONBLOCK);
+           wiz_socket(sn,Sn_MR_UDP4, port, SOCK_IO_NONBLOCK);
            break;
         case AS_IPV6:
-           socket(sn,Sn_MR_UDP6, port, SOCK_IO_NONBLOCK);
+           wiz_socket(sn,Sn_MR_UDP6, port, SOCK_IO_NONBLOCK);
            break;
         case AS_IPDUAL:
-            socket(sn,Sn_MR_UDPD, port, SOCK_IO_NONBLOCK);
+            wiz_socket(sn,Sn_MR_UDPD, port, SOCK_IO_NONBLOCK);
             break;
         }
         printf("%d:Opened, UDP loopback, port [%d] as %s\r\n", sn, port, mode_msg);

@@ -538,11 +538,11 @@ int8_t DNS_run(uint8_t s,uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns
    // Socket open
 
  	if(mode == AS_IPV4 ){
- 		 socket(s, Sn_MR_UDP4, 0, 0);
+ 		 wiz_socket(s, Sn_MR_UDP4, 0, 0);
 		addr_len  = 4;
  	}
 	else if(mode == AS_IPV6){
-	    socket(s, Sn_MR_UDP6, 0, 0);
+	    wiz_socket(s, Sn_MR_UDP6, 0, 0);
 		addr_len = 16;
 	}
 
@@ -552,14 +552,14 @@ int8_t DNS_run(uint8_t s,uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns
 #endif
 
 	len = dns_makequery(0, (char *)name, pDNSMSG, MAX_DNS_BUF_SIZE,mode);
-	sendto(s, pDNSMSG, len, dns_ip, IPPORT_DOMAIN,addr_len);
+	wiz_sendto(s, pDNSMSG, len, dns_ip, IPPORT_DOMAIN,addr_len);
 
 	while (1)
 	{
 		if ((len = getSn_RX_RSR(s)) > 0)
 		{
 			if (len > MAX_DNS_BUF_SIZE) len = MAX_DNS_BUF_SIZE;
-			len = recvfrom(s, pDNSMSG, len, ip, &port,&addr_len);
+			len = wiz_recvfrom(s, pDNSMSG, len, ip, &port,&addr_len);
       #ifdef _DNS_DEBUG_
 	      printf("> Receive DNS message from %d.%d.%d.%d(%d). len = %d\r\n", ip[0], ip[1], ip[2], ip[3],port,len);
       #endif
@@ -580,10 +580,10 @@ int8_t DNS_run(uint8_t s,uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns
 #ifdef _DNS_DEBUG_
 			printf("> DNS Timeout\r\n");
 #endif
-			sendto(s, pDNSMSG, len, dns_ip, IPPORT_DOMAIN,addr_len);
+			wiz_sendto(s, pDNSMSG, len, dns_ip, IPPORT_DOMAIN,addr_len);
 		}
 	}
-	close(s);
+	wiz_close(s);
 	// Return value
 	// 0 > :  failed / 1 - success
 	return ret;

@@ -375,7 +375,7 @@ void send_DHCP_SOLICIT(void)
     printf("> Send DHCP_DISCOVER\r\n");
 #endif
 
-    sendto(DHCP_SOCKET, (uint8_t *)pDHCPMSG.OPT, rip_msg_size, ip, DHCP_SERVER_PORT, 16);
+    wiz_sendto(DHCP_SOCKET, (uint8_t *)pDHCPMSG.OPT, rip_msg_size, ip, DHCP_SERVER_PORT, 16);
 
 #ifdef _DHCP_DEBUG_
     printf("> %d, %d\r\n", ret, rip_msg_size);
@@ -585,7 +585,7 @@ uint8_t send_DHCP_REQUEST(void)
     printf("> Send DHCP_REQUEST\r\n");
 #endif
 
-    sendto(DHCP_SOCKET, (uint8_t *)pDHCPMSG.OPT, rip_msg_size, ip, DHCP_SERVER_PORT, 16);
+    wiz_sendto(DHCP_SOCKET, (uint8_t *)pDHCPMSG.OPT, rip_msg_size, ip, DHCP_SERVER_PORT, 16);
 #ifdef _DHCP_DEBUG_
     printf("> %d, %d\r\n", ret, rip_msg_size);
 #endif
@@ -673,7 +673,7 @@ uint8_t send_DHCP_INFOREQ(void)
     printf("> Send DHCP_REQUEST\r\n");
 #endif
 
-    sendto(DHCP_SOCKET, (uint8_t *)pDHCPMSG.OPT, rip_msg_size, ip, DHCP_SERVER_PORT, 16);
+    wiz_sendto(DHCP_SOCKET, (uint8_t *)pDHCPMSG.OPT, rip_msg_size, ip, DHCP_SERVER_PORT, 16);
 
 #ifdef _DHCP_DEBUG_
     printf("> %d, %d\r\n", ret, rip_msg_size);
@@ -701,7 +701,7 @@ int8_t parseDHCPMSG(void)
 
     if ((len = getSn_RX_RSR(DHCP_SOCKET)) > 0)
     {
-        len = recvfrom(DHCP_SOCKET, (uint8_t *)pDHCPMSG.OPT, len, svr_addr, (uint16_t *)&svr_port, &addlen);
+        len = wiz_recvfrom(DHCP_SOCKET, (uint8_t *)pDHCPMSG.OPT, len, svr_addr, (uint16_t *)&svr_port, &addlen);
 #ifdef _DHCP6_DEBUG_
         printf("DHCP message : %.2x%.2x:%.2x%.2x:%.2x%.2x:%.2x%.2x:%.2x%.2x:%.2x%.2x:%.2x%.2x:%.2x%.2x(%d) %d received. \r\n", svr_addr[0], svr_addr[1], svr_addr[2], svr_addr[3], svr_addr[4], svr_addr[5], svr_addr[6], svr_addr[7], svr_addr[8], svr_addr[9], svr_addr[10], svr_addr[11], svr_addr[12], svr_addr[13], svr_addr[14], svr_addr[15], svr_port, len);
 #endif
@@ -1046,7 +1046,7 @@ uint8_t DHCP_run2(void)
     if (getSn_SR(DHCP_SOCKET) != SOCK_UDP)
     {                                                // Check DHCP SOCKET == UDP
         WIZCHIP_WRITE(_Sn_TTLR_(DHCP_SOCKET), 0x01); // hop limit 1
-        socket(DHCP_SOCKET, (Sn_MR_UDP6), DHCP_CLIENT_PORT, 0x00);
+        wiz_socket(DHCP_SOCKET, (Sn_MR_UDP6), DHCP_CLIENT_PORT, 0x00);
     }
     ret = DHCP_RUNNING;
     type = parseDHCPMSG();
@@ -1083,7 +1083,7 @@ uint8_t DHCP_run(wiz_NetInfo *netinfo)
     if (getSn_SR(DHCP_SOCKET) != SOCK_UDP)
     {                                                // Check DHCP SOCKET == UDP
         WIZCHIP_WRITE(_Sn_TTLR_(DHCP_SOCKET), 0x01); // hop limit 1
-        socket(DHCP_SOCKET, (Sn_MR_UDP6), DHCP_CLIENT_PORT, 0x00);
+        wiz_socket(DHCP_SOCKET, (Sn_MR_UDP6), DHCP_CLIENT_PORT, 0x00);
     }
 
     ret = DHCP_RUNNING;
@@ -1164,7 +1164,7 @@ uint8_t DHCP_run(wiz_NetInfo *netinfo)
  */
 void DHCP_stop(void)
 {
-    close(DHCP_SOCKET);
+    wiz_close(DHCP_SOCKET);
     dhcp_state = STATE_DHCP6_STOP;
 }
 
