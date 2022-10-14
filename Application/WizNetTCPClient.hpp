@@ -12,6 +12,7 @@
 #include "socket.h"
 
 #ifdef  LOG_TAG
+	#define STASH_TAG						LOG_TAG
     #undef  LOG_TAG
 #endif
 #define LOG_TAG                             "TCPClient"
@@ -72,7 +73,7 @@ public:
 								default:;
 								}
 							}
-						} while(fe_ticks_istimeout(start, _timeout) == FALSE);
+						} while(fe_ticks_istimeout(start, _timeout) == 0);
 					}
 					break;
 				}
@@ -208,5 +209,9 @@ public:
 
 } /* namespace WizNet */
 
-#undef  LOG_TAG
+#ifdef STASH_TAG
+#undef LOG_TAG
+#define  LOG_TAG	STASH_TAG
+#undef STASH_TAG
+#endif
 #endif /* IO6LIBRARY_ETHERNET_WIZNETTCP_H_ */

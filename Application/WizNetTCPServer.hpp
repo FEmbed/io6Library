@@ -217,7 +217,7 @@ private:
 								}
 							}
 							if(setup) break;
-						} while(fe_ticks_istimeout(start, timeout) == FALSE);
+						} while(fe_ticks_istimeout(start, timeout) == 0);
 					}
 					if(setup) break;
 				}
@@ -233,5 +233,4 @@ private:
 
 } /* namespace WizNet */
 
-#undef  LOG_TAG
 #endif /* IO6LIBRARY_APPLICATION_WIZNETTCPSERVER_HPP_ */
