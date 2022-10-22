@@ -99,9 +99,9 @@ public:
 
 		gWIZNETINFO = {
 				{0x00, 0x08, 0xdc, 0xff, 0xff, 0xff},				// Source Hardware Address
-				{192, 168, 100, 25},								// Source IPv4 Address
+				{192, 168, 111, 25},								// Source IPv4 Address
 				{255, 255, 255, 0},                                 // Subnet Mask value
-				{192, 168, 100, 1},                                 //
+				{192, 168, 111, 1},                                 //
 				{0xfe,0x80,0x00,0x00,
 				0x00,0x00, 0x00,0x00,
 				0x02,0x08, 0xdc,0xff,
@@ -134,17 +134,16 @@ public:
 	 */
 	void init()
 	{
-		if(m_op)
-        {
-			m_op->reset();
-        }
-        
 		reg_wizchip_spi_cbfunc(
 				W6100SpiReadByte, W6100SpiWriteByte,
 				W6100SpiReadBurst, W6100SpiWriteBurst,
 				W6100SpiVDMXfer);
 		reg_wizchip_cs_cbfunc(W6100CsEnable, W6100CsDisable);
-        
+
+		if(m_op)
+        {
+			m_op->reset();
+        }
 	}
 
 	/**

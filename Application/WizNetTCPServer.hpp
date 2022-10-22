@@ -163,6 +163,11 @@ public:
 		return ret;
 	}
 
+	bool m_need_reset = false;
+	bool needReset() {
+		return m_need_reset;
+	}
+
 private:
 	bool establish(uint16_t port, int index)
 	{
@@ -193,6 +198,8 @@ private:
 						log_w("socket:%d init error:%d", m_socket_fd[index], ret);
 						wiz_close(m_socket_fd[index]);
 						m_socket_fd[index] = -1;
+						// 需要reset 外设了
+						m_need_reset = true;
 					}
 					else
 					{

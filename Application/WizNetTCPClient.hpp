@@ -35,7 +35,7 @@ public:
 		m_socket_fd = -1;
 	}
 
-	int connectV4(u32_t ip, uint16_t port, int32_t timeout = 5000)
+	int connectV4(uint32_t ip, uint16_t port, int32_t timeout = 5000)
 	{
 		uint8_t status;
 		FE_TICKS_TYPE start = fe_get_ticks();
@@ -87,7 +87,7 @@ public:
 	{
 		if(ip.isV4())
 		{
-			u32_t addr = ip.v4();
+			uint32_t addr = ip.v4();
 			this->connectV4(addr, port, this->_timeout);
 		}
 		else
@@ -99,7 +99,7 @@ public:
 		return m_socket_fd;
 	}
 #endif
-
+#if BOOTLOADER == 0
 	int connect(const char *host, uint16_t port) override
 	{
 		IPAddress ip;
@@ -116,6 +116,7 @@ public:
 		this->setTimeout(timeout);
 		return this->connect(host, port);
 	}
+#endif
 
 	size_t write(uint8_t byte) override
 	{
