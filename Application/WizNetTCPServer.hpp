@@ -64,6 +64,7 @@ public:
 			this->establish(port, j);
 		}
 		m_port = port;
+        m_need_reset = false;
 		return true;
 	}
 
@@ -82,9 +83,12 @@ public:
 
 		if(m_socket_fd[index] == -1)
 		{
+			log_d("try to establish %d.", index);
 			if(!this->establish(m_port, index))
 			{
 				log_w("Server sub-conn %d have no valid sockets.", index);
+				// 所有端口都无法建立连接，又无法close，那么就reset硬件
+				m_need_reset = true;
 			}
 		}
 
@@ -193,7 +197,8 @@ private:
 				if(status == SOCK_CLOSED)
 				{
 					m_socket_fd[index] = i;
-					if((ret = wiz_socket(m_socket_fd[index], Sn_MR_TCPD, port, 0x0)) != m_socket_fd[index])
+					ret = wiz_socket(m_socket_fd[index], Sn_MR_TCPD, port, 0x0);
+					if(ret != m_socket_fd[index])
 					{
 						log_w("socket:%d init error:%d", m_socket_fd[index], ret);
 						wiz_close(m_socket_fd[index]);
@@ -214,7 +219,7 @@ private:
 									break;
 								case SOCK_LISTEN:
 								case SOCK_ESTABLISHED:
-									log_d("socket:%d listening.", i);
+									log_d("socket:%d listening at %d.", i, m_socket_fd[index]);
 									setup = true;
 									break;
 								case SOCK_CLOSED:

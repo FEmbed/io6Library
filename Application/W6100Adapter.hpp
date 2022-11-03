@@ -236,7 +236,8 @@ public:
 
 	bool registerNetInfo()
 	{
-		if(ctlnetwork(CN_SET_NETINFO, &gWIZNETINFO) == -1)
+		wiz_NetInfo tmp = gWIZNETINFO;
+		if(ctlnetwork(CN_SET_NETINFO, &tmp) == -1)			// SPI 接口覆盖输入写数据
 		{
 			log_w("W6100 register network information fail.");
 			return false;
