@@ -101,7 +101,7 @@ static uint8_t  sock_pack_info[_WIZCHIP_SOCK_NUM_] = {0,};
 int8_t wiz_socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
 { 
    uint8_t taddr[16];
-   uint16_t local_port=0;
+   //uint16_t local_port = 0;
    CHECK_SOCKNUM(); 
    switch (protocol & 0x0F)
    {
