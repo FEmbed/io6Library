@@ -163,6 +163,21 @@ public:
 	}
 
 	/**
+ 	 * @fn bool resetPHYLink()
+	 * @brief Soft reset phy-link is phy didn't on for long time.
+	 *
+	 * @pre
+	 * @post
+	 * @return
+	 */
+	bool resetPHYLink()
+	{
+		uint8_t ret = 0;
+		ctlwizchip(CW_RESET_PHY, (void *)&ret);
+		return true;
+	}
+
+	/**
 	 * @fn void updateBufferMap(uint8_t*, uint8_t*)
 	 * @brief set socket tx buffer size and rx buffer size.
 	 *
